@@ -56,7 +56,6 @@ jobs:
         id: set_env
         run: |
           source ./build/envsetup.sh highest
-          echo "sending to GH_OUTPUT vars = $GENERIC_CPP_STDLIB_PATH, $ARCH_SPECIFIC_CPP_STDLIB_PATH"
           echo "arch_specific_cpp_stdlib_path=$ARCH_SPECIFIC_CPP_STDLIB_PATH" >> $GITHUB_OUTPUT
           echo "generic_cpp_stdlib_path=$GENERIC_CPP_STDLIB_PATH" >> $GITHUB_OUTPUT
 
@@ -89,8 +88,6 @@ jobs:
           echo "VSOMEIP_SOURCE_PATH: ${{ env.VSOMEIP_SOURCE_PATH }}"
           echo "VSOMEIP_INSTALL_PATH: ${{ env.VSOMEIP_INSTALL_PATH }}"
           echo "VSOMEIP_SOURCE_PATH_WITH_WILDCARD: ${{ env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD }}"
-          echo "yyyy $ARCH_SPECIFIC_CPP_STDLIB_PATH"
-          echo "yyyy $GENERIC_CPP_STDLIB_PATH"
           echo "GENERIC_CPP_STDLIB_PATH: ${{ env.GENERIC_CPP_STDLIB_PATH }}"
           echo "ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ env.ARCH_SPECIFIC_CPP_STDLIB_PATH }}"
           env
@@ -174,8 +171,6 @@ jobs:
       - name: Print environment variables for debugging
         run: |
           echo "VSOMEIP_INSTALL_PATH: ${{ env.VSOMEIP_INSTALL_PATH }}"
-          echo "yyyy $ARCH_SPECIFIC_CPP_STDLIB_PATH"
-          echo "yyyy $GENERIC_CPP_STDLIB_PATH"
 
       - name: Ensure vsomeip install path exists
         run: |
@@ -238,8 +233,6 @@ jobs:
         run: |
           echo "VSOMEIP_INSTALL_PATH: ${{ env.VSOMEIP_INSTALL_PATH }}"
           echo "LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}"
-          echo "yyyy $ARCH_SPECIFIC_CPP_STDLIB_PATH"
-          echo "yyyy $GENERIC_CPP_STDLIB_PATH"
 
       - name: Ensure vsomeip install path exists
         run: |
@@ -318,8 +311,6 @@ jobs:
       - name: Print environment variables for debugging
         run: |
           echo "VSOMEIP_INSTALL_PATH: ${{ env.VSOMEIP_INSTALL_PATH }}"
-          echo "yyyy $ARCH_SPECIFIC_CPP_STDLIB_PATH"
-          echo "yyyy $GENERIC_CPP_STDLIB_PATH"
 
       - name: Ensure vsomeip install path exists
         run: |
