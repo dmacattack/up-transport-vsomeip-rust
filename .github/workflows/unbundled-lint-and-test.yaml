@@ -102,15 +102,24 @@ jobs:
           echo "BOOST_INSTALL_PATH: ${{ env.BOOST_INSTALL_PATH }}"
           env
 
+      - name: Search boost
+        run: |
+          sudo apt-get install aptitude
+          aptitude search boost
+
       - name: Install boost
         run: |
           wget -O boost-source.tar.gz $BOOST_SOURCE_TARBALL
           mkdir -p $BOOST_SOURCE_PATH
           tar -xzf boost-source.tar.gz -C $BOOST_SOURCE_PATH
-          cd $BOOST_SOURCE_PATH
+          echo "current directory is $(pwd)"
+          ls -l 
+          cd $BOOST_SOURCE_PATH/*
+          echo "source directory is $(pwd)"
+          ls -l
           ./bootstrap.sh --prefix=$BOOST_INSTALL_PATH
-          sudo ./b2 install
-          cd ..
+          sudo ./b2 install cxxflags="-Wno-sign-compare"
+          cd ../../
 
       - name: Download tarball
         run: |
