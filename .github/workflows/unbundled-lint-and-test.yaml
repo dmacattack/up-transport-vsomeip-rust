@@ -44,7 +44,7 @@ jobs:
 
   set-env:
     name: Set environment variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     outputs:
       arch_specific_cpp_stdlib_path: ${{ steps.set_env.outputs.arch_specific_cpp_stdlib_path }}
@@ -64,7 +64,7 @@ jobs:
           echo "generic_cpp_stdlib_path=$GENERIC_CPP_STDLIB_PATH" >> $GITHUB_OUTPUT
 
   obtain_and_build_vsomeip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: set-env
 
     outputs:
@@ -107,19 +107,19 @@ jobs:
           sudo apt-get install aptitude
           aptitude search boost
 
-      - name: Install boost
-        run: |
-          wget -O boost-source.tar.gz $BOOST_SOURCE_TARBALL
-          mkdir -p $BOOST_SOURCE_PATH
-          tar -xzf boost-source.tar.gz -C $BOOST_SOURCE_PATH
-          echo "current directory is $(pwd)"
-          ls -l 
-          cd $BOOST_SOURCE_PATH/*
-          echo "source directory is $(pwd)"
-          ls -l
-          ./bootstrap.sh --prefix=$BOOST_INSTALL_PATH
-          sudo ./b2 install cxxflags="-Wno-sign-compare"
-          cd ../../
+      # - name: Install boost
+      #   run: |
+      #     wget -O boost-source.tar.gz $BOOST_SOURCE_TARBALL
+      #     mkdir -p $BOOST_SOURCE_PATH
+      #     tar -xzf boost-source.tar.gz -C $BOOST_SOURCE_PATH
+      #     echo "current directory is $(pwd)"
+      #     ls -l 
+      #     cd $BOOST_SOURCE_PATH/*
+      #     echo "source directory is $(pwd)"
+      #     ls -l
+      #     ./bootstrap.sh --prefix=$BOOST_INSTALL_PATH
+      #     sudo ./b2 install cxxflags="-Wno-sign-compare"
+      #     cd ../../
 
       - name: Download tarball
         run: |
@@ -162,7 +162,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-vsomeip.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y build-essential cmake doxygen asciidoc 
+        run: sudo apt-get install -y build-essential cmake libboost1.74-all-dev doxygen asciidoc 
 
       - name: Build vsomeip
         if: steps.cache-vsomeip.outputs.cache-hit != 'true'
@@ -183,7 +183,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ needs.set-env.outputs.arch_specific_cpp_stdlib_path }}
@@ -238,7 +238,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CACHE_KEY: ${{ needs.obtain_and_build_vsomeip.outputs.cache_key }}
@@ -324,7 +324,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       CACHE_KEY: ${{ needs.obtain_and_build_vsomeip.outputs.cache_key }}
       ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ needs.set-env.outputs.arch_specific_cpp_stdlib_path }}
