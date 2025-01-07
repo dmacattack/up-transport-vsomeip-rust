@@ -18,6 +18,10 @@ env:
   VSOMEIP_RELEASE_TAG: 3.4.10.tar.gz
   VSOMEIP_SOURCE_PATH: vsomeip-src
   VSOMEIP_INSTALL_PATH: vsomeip-install
+  BOOST_RELEASE_URL: https://archives.boost.io/release/1.74.0/source/
+  BOOST_RELEASE_VERSION: boost_1_74_0.tar.gz
+  BOOST_SOURCE_PATH: boost-src
+  BOOST_INSTALL_PATH: /usr/local
 
 on:
   push:
@@ -40,7 +44,7 @@ jobs:
 
   set-env:
     name: Set environment variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     outputs:
       arch_specific_cpp_stdlib_path: ${{ steps.set_env.outputs.arch_specific_cpp_stdlib_path }}
@@ -60,7 +64,7 @@ jobs:
           echo "generic_cpp_stdlib_path=$GENERIC_CPP_STDLIB_PATH" >> $GITHUB_OUTPUT
 
   obtain_and_build_vsomeip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: set-env
 
     outputs:
@@ -80,6 +84,9 @@ jobs:
           echo "VSOMEIP_SOURCE_PATH=${{ github.workspace }}/${{ env.VSOMEIP_SOURCE_PATH }}" >> $GITHUB_ENV
           echo "VSOMEIP_INSTALL_PATH=${{ github.workspace }}/${{ env.VSOMEIP_INSTALL_PATH }}" >> $GITHUB_ENV
           echo "VSOMEIP_SOURCE_PATH_WITH_WILDCARD=${{ github.workspace }}/${{ env.VSOMEIP_SOURCE_PATH }}/*" >> $GITHUB_ENV
+          echo "BOOST_SOURCE_TARBALL=${{ env.BOOST_RELEASE_URL }}${{ env.BOOST_RELEASE_VERSION }}" >> $GITHUB_ENV
+          echo "BOOST_SOURCE_PATH=${{ github.workspace }}/${{ env.BOOST_SOURCE_PATH }}" >> $GITHUB_ENV
+          echo "BOOST_INSTALL_PATH=${{ env.BOOST_INSTALL_PATH }}" >> $GITHUB_ENV
           env
 
       - name: Print environment variables for debugging
@@ -90,8 +97,30 @@ jobs:
           echo "VSOMEIP_SOURCE_PATH_WITH_WILDCARD: ${{ env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD }}"
           echo "GENERIC_CPP_STDLIB_PATH: ${{ env.GENERIC_CPP_STDLIB_PATH }}"
           echo "ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ env.ARCH_SPECIFIC_CPP_STDLIB_PATH }}"
+          echo "BOOST_SOURCE_TARBALL: ${{ env.BOOST_SOURCE_TARBALL }}"
+          echo "BOOST_SOURCE_PATH: ${{ env.BOOST_SOURCE_PATH }}"
+          echo "BOOST_INSTALL_PATH: ${{ env.BOOST_INSTALL_PATH }}"
           env
-          
+
+      - name: Search boost
+        run: |
+          sudo apt-get install aptitude
+          aptitude search boost
+
+      # - name: Install boost
+      #   run: |
+      #     wget -O boost-source.tar.gz $BOOST_SOURCE_TARBALL
+      #     mkdir -p $BOOST_SOURCE_PATH
+      #     tar -xzf boost-source.tar.gz -C $BOOST_SOURCE_PATH
+      #     echo "current directory is $(pwd)"
+      #     ls -l 
+      #     cd $BOOST_SOURCE_PATH/*
+      #     echo "source directory is $(pwd)"
+      #     ls -l
+      #     ./bootstrap.sh --prefix=$BOOST_INSTALL_PATH
+      #     sudo ./b2 install cxxflags="-Wno-sign-compare"
+      #     cd ../../
+
       - name: Download tarball
         run: |
           wget -O vsomeip-source.tar.gz $VSOMEIP_SOURCE_TARBALL
@@ -116,7 +145,7 @@ jobs:
           ls -l $VSOMEIP_SOURCE_PATH
 
       - name: Generate cache key
-        run: echo "CACHE_KEY=${{ runner.os }}-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}" >> $GITHUB_ENV
+        run: echo "CACHE_KEY=${{ runner.os }}-xxx-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}" >> $GITHUB_ENV
 
       - name: Set cache key output
         id: generate_cache_key
@@ -127,7 +156,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.VSOMEIP_INSTALL_PATH }}
-          key: ${{ runner.os }}-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}
+          key: ${{ runner.os }}-xxx-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}
           restore-keys: |
             ${{ runner.os }}-vsomeip-
 
@@ -138,7 +167,7 @@ jobs:
       
       - name: Install dependencies
         if: steps.cache-vsomeip.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y build-essential cmake libboost-all-dev libclang-dev doxygen asciidoc 
+        run: sudo apt-get install -y build-essential cmake libboost1.74-all-dev doxygen asciidoc 
 
       - name: Build vsomeip
         if: steps.cache-vsomeip.outputs.cache-hit != 'true'
@@ -159,7 +188,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ needs.set-env.outputs.arch_specific_cpp_stdlib_path }}
@@ -214,7 +243,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CACHE_KEY: ${{ needs.obtain_and_build_vsomeip.outputs.cache_key }}
@@ -300,7 +329,7 @@ jobs:
     needs: 
       - obtain_and_build_vsomeip
       - set-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       CACHE_KEY: ${{ needs.obtain_and_build_vsomeip.outputs.cache_key }}
       ARCH_SPECIFIC_CPP_STDLIB_PATH: ${{ needs.set-env.outputs.arch_specific_cpp_stdlib_path }}
