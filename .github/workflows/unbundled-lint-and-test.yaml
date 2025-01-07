@@ -160,6 +160,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vsomeip-
 
+      - name: Search boost
+        run: |
+          sudo apt-get install aptitude
+          aptitude search boost
+      
       - name: Install dependencies
         if: steps.cache-vsomeip.outputs.cache-hit != 'true'
         run: sudo apt-get install -y build-essential cmake libboost1.74-all-dev doxygen asciidoc 
