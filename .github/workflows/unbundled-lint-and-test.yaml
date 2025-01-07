@@ -145,7 +145,7 @@ jobs:
           ls -l $VSOMEIP_SOURCE_PATH
 
       - name: Generate cache key
-        run: echo "CACHE_KEY=${{ runner.os }}-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}" >> $GITHUB_ENV
+        run: echo "CACHE_KEY=${{ runner.os }}-xxx-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}" >> $GITHUB_ENV
 
       - name: Set cache key output
         id: generate_cache_key
@@ -156,7 +156,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.VSOMEIP_INSTALL_PATH }}
-          key: ${{ runner.os }}-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}
+          key: ${{ runner.os }}-xxx-vsomeip-${{ hashFiles(env.VSOMEIP_SOURCE_PATH_WITH_WILDCARD) }}
           restore-keys: |
             ${{ runner.os }}-vsomeip-
 
